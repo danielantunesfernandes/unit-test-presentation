@@ -11,7 +11,7 @@ jest.mock("../hooks/useCalc", () => ({
 describe("Incrementor.tsx", () => {
   test("Component Incrementor should rendered correctly", () => {
     render(<Incrementor />);
-    const keyTextElem = screen.getByText("Incrementor");
+    const keyTextElem = screen.getByText("Example");
     expect(keyTextElem).toBeInTheDocument();
     const elem = screen.getByTestId("result");
     expect(elem).toBeInTheDocument();
