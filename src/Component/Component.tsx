@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useCalc from "../hooks/useCalc";
-function Incrementor(): JSX.Element {
+function Component(): JSX.Element {
   const [numberValue, setNumberValue] = useState(0);
   const { calcPowerTwo } = useCalc();
 
@@ -16,7 +16,7 @@ function Incrementor(): JSX.Element {
 
   return (
     <div>
-      <h1>Incrementor</h1>
+      <h1>Example</h1>
       Value: <span data-testid="result">{numberValue}</span>
       <br />
       <button onClick={incrementValue}>Increment</button>
@@ -25,4 +25,4 @@ function Incrementor(): JSX.Element {
   );
 }
 
-export default Incrementor;
+export default Component;

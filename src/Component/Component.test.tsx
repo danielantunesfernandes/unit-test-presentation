@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import Incrementor from "./Incrementor";
+import Component from "./Component";
 
 const mockCalcPowerTwo = jest.fn();
 
@@ -10,7 +10,7 @@ jest.mock("../hooks/useCalc", () => ({
 }));
 describe("Incrementor.tsx", () => {
   test("Component Incrementor should rendered correctly", () => {
-    render(<Incrementor />);
+    render(<Component />);
     const keyTextElem = screen.getByText("Example");
     expect(keyTextElem).toBeInTheDocument();
     const elem = screen.getByTestId("result");
@@ -23,14 +23,14 @@ describe("Incrementor.tsx", () => {
   });
 
   test("When component is rendered should have as default value 0", () => {
-    render(<Incrementor />);
+    render(<Component />);
     const elem = screen.getByTestId("result");
     expect(elem).toBeInTheDocument();
     expect(elem.innerHTML).toBe("0");
   });
 
   test("When push the button the value should be incremented", () => {
-    render(<Incrementor />);
+    render(<Component />);
     const elem = screen.getByTestId("result");
     expect(elem).toBeInTheDocument();
     expect(elem.innerHTML).toBe("0");
@@ -47,7 +47,7 @@ describe("Incrementor.tsx", () => {
   test("When the user push the button to calculate the power of two should the input value be updated with the power of two of the value", () => {
     mockCalcPowerTwo.mockReturnValue(4);
 
-    render(<Incrementor />);
+    render(<Component />);
     const elem = screen.getByTestId("result");
     expect(elem).toBeInTheDocument();
     expect(elem.innerHTML).toBe("0");
