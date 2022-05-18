@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useCalc from "../hooks/useCalc";
+import useCalc from "../../hooks/useCalc";
 function Component(): JSX.Element {
   const [numberValue, setNumberValue] = useState(0);
   const { calcPowerTwo } = useCalc();
