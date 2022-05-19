@@ -127,7 +127,7 @@ describe("useUsers.ts", () => {
             });
             const { createUser } = useUsersApi();
             let user: User | undefined;
-            //execute method getUsers inside act and with await to be able assert the resutl
+            //execute method getUsers inside act and with await to be able assert the result
             await act(async () => {
                 user = await createUser({
                     "name": name,
@@ -159,6 +159,94 @@ describe("useUsers.ts", () => {
             expect(user!.gender).toBe(gender);
             expect(user!.status).toBe(status);
             expect(user!.id).toBe(id);
+        });
+        test("When call api to create a user and the response is different from 201 should throw exception", async () => {
+            //Mock request service
+            const axiosSpy = jest.spyOn(axios, "post");
+            axiosSpy.mockResolvedValue({
+                "status": 400, "message": "Something"
+            });
+            const { createUser } = useUsersApi();
+
+            return expect(createUser({
+                "name": "name",
+                "email": "email",
+                "gender": "gender",
+                "status": "status"
+            })).rejects.toEqual(new Error(ERROR_MSG_NOT_SUCCESS));
+
+        });
+    });
+
+    describe("updateUser", () => {
+        test("When its call the API to update the user with success should return the user data updated", async () => {
+            const name = "Amalia";
+            const email = "Amalia@fado.com";
+            const gender = "female";
+            const status = "inactive";
+            const id = 3909;
+
+            //Mock request service
+            const axiosSpy = jest.spyOn(axios, "patch");
+            axiosSpy.mockResolvedValue({
+                "status": 200, data: {
+                    id: id,
+                    name: name,
+                    email: email,
+                    gender: gender,
+                    status: status
+                }
+            });
+            const { updateUser } = useUsersApi();
+            let user: User | undefined;
+            //execute method getUsers inside act and with await to be able assert the result
+            await act(async () => {
+                user = await updateUser({
+                    "id": id,
+                    "name": name,
+                    "email": email,
+                    "gender": gender,
+                    "status": status
+                });
+            });
+
+            expect(axiosSpy).toBeCalled();
+            expect(axiosSpy).toBeCalledWith(API_BASE_PATH + USER_RESOURCE_NAME + '/' + id,
+                {
+                    "email": email,
+                    "name": name,
+                    "status": status
+                },
+                {
+                    "headers": {
+                        "Accept": "application/json",
+                        "Authorization": "Bearer 5b9a3ce53fb41e021ffdd64e4d8400062ab2e8885bfdce2c55bb351099919773",
+                        "Content-Type": "application/json"
+                    }
+                });
+
+            expect(user).toBeDefined();
+            expect(user!.email).toBe(email);
+            expect(user!.name).toBe(name);
+            expect(user!.gender).toBe(gender);
+            expect(user!.status).toBe(status);
+            expect(user!.id).toBe(id);
+        });
+        test("When call api to update a user and the response is different from 200 should throw exception", async () => {
+            //Mock request service
+            const axiosSpy = jest.spyOn(axios, "patch");
+            axiosSpy.mockResolvedValue({
+                "status": 400, "message": "Something"
+            });
+            const { updateUser } = useUsersApi();
+
+            return expect(updateUser({
+                "id": "id",
+                "name": "name",
+                "email": "email",
+                "status": "status"
+            })).rejects.toEqual(new Error(ERROR_MSG_NOT_SUCCESS));
+
         });
     });
 });

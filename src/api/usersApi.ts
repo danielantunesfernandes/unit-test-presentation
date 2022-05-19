@@ -38,7 +38,6 @@ function useUsersApi(): any {
             })
             .catch(function (error) {
                 // handle error
-                console.log(error);
                 throw new Error(error);
             });
     }
@@ -46,7 +45,9 @@ function useUsersApi(): any {
     const updateUser = function ({ id, name, email, status }: UserUpdate): Promise<User> {
         return axios.patch(path + "/" + id, { name, email, status }, {
             headers: {
-                'Authorization': HEADER_AUTHORIZATION
+                'Authorization': HEADER_AUTHORIZATION,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
             }
         }).then(function (response) {
             if (response.status === HttpStatusCode.OK) {
@@ -56,7 +57,6 @@ function useUsersApi(): any {
             }
         }).catch(function (error) {
             // handle error
-            console.log(error);
             throw new Error(error);
         });
     }
@@ -75,7 +75,6 @@ function useUsersApi(): any {
             }
         }).catch(function (error) {
             // handle error
-            console.log(error);
             throw new Error(error);
         });
     }
