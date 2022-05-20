@@ -1,8 +1,9 @@
 import { act } from "@testing-library/react";
 import { User } from "../types/User.type";
-import useUsersApi, { API_BASE_PATH, USER_RESOURCE_NAME, ERROR_MSG_NOT_SUCCESS } from "./usersApi";
+import usersApi, { API_BASE_PATH, USER_RESOURCE_NAME, ERROR_MSG_NOT_SUCCESS } from "./usersApi";
 import axios from "axios";
 import { Filter, FilterOptions } from "../types/Filter.type";
+import UsersApi from "./usersApi";
 
 describe("useUsers.ts", () => {
     describe("getUsers", () => {
@@ -14,7 +15,7 @@ describe("useUsers.ts", () => {
                     message: 'bad request'
                 }
             });
-            const { getUsers } = useUsersApi();
+            const { getUsers } = UsersApi();
             return expect(getUsers()).rejects.toEqual(new Error(ERROR_MSG_NOT_SUCCESS));
         });
 
@@ -30,7 +31,7 @@ describe("useUsers.ts", () => {
                     status: 'inactive'
                 }]
             });
-            const { getUsers } = useUsersApi();
+            const { getUsers } = UsersApi();
             let users: Array<User> = [];
             //execute method getUsers inside act and with await to be able assert the resutl
             await act(async () => { users = await getUsers(); });
@@ -58,7 +59,7 @@ describe("useUsers.ts", () => {
                     status: 'active'
                 }]
             });
-            const { getUsers } = useUsersApi();
+            const { getUsers } = UsersApi();
             let users: Array<User> = [];
             //execute method getUsers inside act and with await to be able assert the resutl
             await act(async () => { users = await getUsers(); });
@@ -74,7 +75,7 @@ describe("useUsers.ts", () => {
             axiosSpy.mockResolvedValue({
                 "status": 404, "message": "Resource not found"
             });
-            const { getUsersById } = useUsersApi();
+            const { getUsersById } = UsersApi();
             let users: Array<User> = [];
             //execute method getUsers inside act and with await to be able assert the result
             await act(async () => { users = await getUsersById("1111"); });
@@ -96,7 +97,7 @@ describe("useUsers.ts", () => {
                     status: 'inactive'
                 }]
             });
-            const { getUsers } = useUsersApi();
+            const { getUsers } = UsersApi();
             let users: Array<User> = [];
             //execute method getUsers inside act and with await to be able assert the resutl
             await act(async () => { users = await getUsers(); });
@@ -118,7 +119,7 @@ describe("useUsers.ts", () => {
                     status: 'inactive'
                 }]
             });
-            const { getUsers } = useUsersApi();
+            const { getUsers } = UsersApi();
             let users: Array<User> = [];
             const filters: Filter[] = [];
             filters.push({ type: FilterOptions.NAME, value: "test" });
@@ -150,7 +151,7 @@ describe("useUsers.ts", () => {
                     status: status
                 }
             });
-            const { createUser } = useUsersApi();
+            const { createUser } = UsersApi();
             let user: User | undefined;
             //execute method getUsers inside act and with await to be able assert the result
             await act(async () => {
@@ -191,7 +192,7 @@ describe("useUsers.ts", () => {
             axiosSpy.mockResolvedValue({
                 "status": 400, "message": "Something"
             });
-            const { createUser } = useUsersApi();
+            const { createUser } = UsersApi();
 
             return expect(createUser({
                 "name": "name",
@@ -222,7 +223,7 @@ describe("useUsers.ts", () => {
                     status: status
                 }
             });
-            const { updateUser } = useUsersApi();
+            const { updateUser } = UsersApi();
             let user: User | undefined;
             //execute method getUsers inside act and with await to be able assert the result
             await act(async () => {
@@ -263,7 +264,7 @@ describe("useUsers.ts", () => {
             axiosSpy.mockResolvedValue({
                 "status": 400, "message": "Something"
             });
-            const { updateUser } = useUsersApi();
+            const { updateUser } = UsersApi();
 
             return expect(updateUser({
                 "id": "id",
@@ -284,7 +285,7 @@ describe("useUsers.ts", () => {
             axiosSpy.mockResolvedValue({
                 "status": 204, data: {}
             });
-            const { deleteUser } = useUsersApi();
+            const { deleteUser } = UsersApi();
 
             //execute method getUsers inside act and with await to be able assert the result
             await act(async () => {
@@ -307,7 +308,7 @@ describe("useUsers.ts", () => {
             axiosSpy.mockResolvedValue({
                 "status": 400, "message": "Something"
             });
-            const { deleteUser } = useUsersApi();
+            const { deleteUser } = usersApi();
 
             return expect(deleteUser("id")).rejects.toEqual(new Error(ERROR_MSG_NOT_SUCCESS));
         });

@@ -21,7 +21,15 @@ export type UserCreate = {
     status: string;
 }
 
-function useUsersApi(): any {
+interface UsersApiOutPut {
+    getUsersById: (id?: string, filters?: Array<Filter>) => Promise<Array<User>>;
+    getUsers: (filters?: Array<Filter>) => Promise<Array<User>>;
+    createUser: ({ name, email, status, gender }: UserCreate) => Promise<User>;
+    deleteUser: (id: string) => Promise<void>;
+    updateUser: ({ id, name, email, status }: UserUpdate) => Promise<User>;
+}
+
+function UsersApi(): UsersApiOutPut {
     const path = API_BASE_PATH + USER_RESOURCE_NAME;
 
     function getApiHeaders() {
@@ -114,4 +122,4 @@ function useUsersApi(): any {
     return { getUsers, getUsersById, updateUser, createUser, deleteUser };
 }
 
-export default useUsersApi;
+export default UsersApi;
