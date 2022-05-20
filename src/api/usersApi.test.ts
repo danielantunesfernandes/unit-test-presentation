@@ -4,7 +4,7 @@ import useUsersApi, { API_BASE_PATH, USER_RESOURCE_NAME, ERROR_MSG_NOT_SUCCESS }
 import axios from "axios";
 
 describe("useUsers.ts", () => {
-    describe("getUsers ", () => {
+    describe("getUsers", () => {
         test("When call api to get all the users and does not return 20o should throw an Error", () => {
             //Mock request service
             const axiosSpy = jest.spyOn(axios, "get");
@@ -247,6 +247,44 @@ describe("useUsers.ts", () => {
                 "status": "status"
             })).rejects.toEqual(new Error(ERROR_MSG_NOT_SUCCESS));
 
+        });
+    });
+
+    describe("deleteUser", () => {
+        test("When its call the API to delete the user with success should not throw exception", async () => {
+
+            const id = "11111";
+            //Mock request service
+            const axiosSpy = jest.spyOn(axios, "delete");
+            axiosSpy.mockResolvedValue({
+                "status": 204, data: {}
+            });
+            const { deleteUser } = useUsersApi();
+
+            //execute method getUsers inside act and with await to be able assert the result
+            await act(async () => {
+                await deleteUser(id);
+            });
+
+            expect(axiosSpy).toBeCalled();
+            expect(axiosSpy).toBeCalledWith(API_BASE_PATH + USER_RESOURCE_NAME + '/' + id,
+                {
+                    "headers": {
+                        "Accept": "application/json",
+                        "Authorization": "Bearer 5b9a3ce53fb41e021ffdd64e4d8400062ab2e8885bfdce2c55bb351099919773",
+                        "Content-Type": "application/json"
+                    }
+                });
+        });
+        test("When call api to delete a user and the response is different from 204 should throw exception", async () => {
+            //Mock request service
+            const axiosSpy = jest.spyOn(axios, "delete");
+            axiosSpy.mockResolvedValue({
+                "status": 400, "message": "Something"
+            });
+            const { deleteUser } = useUsersApi();
+
+            return expect(deleteUser("id")).rejects.toEqual(new Error(ERROR_MSG_NOT_SUCCESS));
         });
     });
 });

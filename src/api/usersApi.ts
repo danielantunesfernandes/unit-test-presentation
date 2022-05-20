@@ -78,7 +78,26 @@ function useUsersApi(): any {
             throw new Error(error);
         });
     }
-    return { getUsers, updateUser, createUser };
+    const deleteUser = function (id: string): Promise<void> {
+        return axios.delete(path + "/" + id, {
+            headers: {
+                'Authorization': HEADER_AUTHORIZATION,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(function (response) {
+            if (response.status === HttpStatusCode.NO_CONTENT) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject(ERROR_MSG_NOT_SUCCESS);
+            }
+
+        }).catch(function (error) {
+            // handle error
+            throw new Error(error);
+        });
+    }
+    return { getUsers, updateUser, createUser, deleteUser };
 }
 
 export default useUsersApi;
