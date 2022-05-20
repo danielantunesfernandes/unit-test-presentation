@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Filter } from "../types/Filter.type";
 import HttpStatusCode from "../types/HttpStatusCode";
 import { User } from "../types/User.type";
 
@@ -19,14 +20,41 @@ export type UserCreate = {
     gender: string;
     status: string;
 }
+
 function useUsersApi(): any {
     const path = API_BASE_PATH + USER_RESOURCE_NAME;
-    const getUsers = function (id: string | undefined): Promise<Array<User>> {
+
+    function getApiHeaders() {
+        return {
+            headers: {
+                'Authorization': HEADER_AUTHORIZATION,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        };
+    }
+    function handleFilters(filters: Filter[]) {
+        let queryStr = "?";
+        filters.forEach((filter) => { queryStr = queryStr.concat(filter.type, "=", filter.value); });
+        return queryStr;
+    }
+
+    function prepareGetPath(id: string | undefined, filters: Filter[] | undefined) {
         let finalPath = path;
         if (id) {
             finalPath += "/" + id;
         }
-        return axios.get(finalPath)
+
+        if (filters && filters.length > 0) {
+            finalPath += handleFilters(filters);
+        }
+        return finalPath;
+    }
+
+
+    const getUsersById = function (id?: string, filters?: Array<Filter>): Promise<Array<User>> {
+
+        return axios.get(prepareGetPath(id, filters))
             .then(function (response) {
                 if (response.status === HttpStatusCode.OK) {
                     return response.data;
@@ -42,14 +70,12 @@ function useUsersApi(): any {
             });
     }
 
+    const getUsers = function (filters?: Array<Filter>): Promise<Array<User>> {
+        return getUsersById(undefined, filters);
+    }
+
     const updateUser = function ({ id, name, email, status }: UserUpdate): Promise<User> {
-        return axios.patch(path + "/" + id, { name, email, status }, {
-            headers: {
-                'Authorization': HEADER_AUTHORIZATION,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(function (response) {
+        return axios.patch(path + "/" + id, { name, email, status }, getApiHeaders()).then(function (response) {
             if (response.status === HttpStatusCode.OK) {
                 return response.data;
             } else {
@@ -61,13 +87,7 @@ function useUsersApi(): any {
         });
     }
     const createUser = function ({ name, email, status, gender }: UserCreate): Promise<User> {
-        return axios.post(path, { name, email, status, gender }, {
-            headers: {
-                'Authorization': HEADER_AUTHORIZATION,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(function (response) {
+        return axios.post(path, { name, email, status, gender }, getApiHeaders()).then(function (response) {
             if (response.status === HttpStatusCode.CREATED) {
                 return response.data;
             } else {
@@ -79,13 +99,7 @@ function useUsersApi(): any {
         });
     }
     const deleteUser = function (id: string): Promise<void> {
-        return axios.delete(path + "/" + id, {
-            headers: {
-                'Authorization': HEADER_AUTHORIZATION,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(function (response) {
+        return axios.delete(path + "/" + id, getApiHeaders()).then(function (response) {
             if (response.status === HttpStatusCode.NO_CONTENT) {
                 return Promise.resolve();
             } else {
@@ -97,7 +111,7 @@ function useUsersApi(): any {
             throw new Error(error);
         });
     }
-    return { getUsers, updateUser, createUser, deleteUser };
+    return { getUsers, getUsersById, updateUser, createUser, deleteUser };
 }
 
 export default useUsersApi;

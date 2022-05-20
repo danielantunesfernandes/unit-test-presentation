@@ -2,6 +2,7 @@ import { act } from "@testing-library/react";
 import { User } from "../types/User.type";
 import useUsersApi, { API_BASE_PATH, USER_RESOURCE_NAME, ERROR_MSG_NOT_SUCCESS } from "./usersApi";
 import axios from "axios";
+import { Filter, FilterOptions } from "../types/Filter.type";
 
 describe("useUsers.ts", () => {
     describe("getUsers", () => {
@@ -73,10 +74,10 @@ describe("useUsers.ts", () => {
             axiosSpy.mockResolvedValue({
                 "status": 404, "message": "Resource not found"
             });
-            const { getUsers } = useUsersApi();
+            const { getUsersById } = useUsersApi();
             let users: Array<User> = [];
-            //execute method getUsers inside act and with await to be able assert the resutl
-            await act(async () => { users = await getUsers("1111"); });
+            //execute method getUsers inside act and with await to be able assert the result
+            await act(async () => { users = await getUsersById("1111"); });
 
             expect(axiosSpy).toBeCalled();
             expect(axiosSpy).toBeCalledWith(API_BASE_PATH + USER_RESOURCE_NAME + "/" + "1111");
@@ -102,6 +103,30 @@ describe("useUsers.ts", () => {
 
             expect(axiosSpy).toBeCalled();
             expect(axiosSpy).toBeCalledWith(API_BASE_PATH + USER_RESOURCE_NAME);
+            expect(users.length).toBe(1);
+        });
+
+        test("When call api with filters the request should have query string with the filters", async () => {
+            //Mock request service
+            const axiosSpy = jest.spyOn(axios, "get");
+            axiosSpy.mockResolvedValue({
+                "status": 200, data: [{
+                    id: 3909,
+                    name: 'Vrinda Iyengar',
+                    email: 'iyengar_vrinda@metz.com',
+                    gender: 'male',
+                    status: 'inactive'
+                }]
+            });
+            const { getUsers } = useUsersApi();
+            let users: Array<User> = [];
+            const filters: Filter[] = [];
+            filters.push({ type: FilterOptions.NAME, value: "test" });
+            //execute method getUsers inside act and with await to be able assert the result
+            await act(async () => { users = await getUsers(filters); });
+
+            expect(axiosSpy).toBeCalled();
+            expect(axiosSpy).toBeCalledWith(API_BASE_PATH + USER_RESOURCE_NAME + "?" + FilterOptions.NAME + "=" + "test");
             expect(users.length).toBe(1);
         });
     });
